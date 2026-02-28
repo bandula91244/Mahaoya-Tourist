@@ -1,0 +1,256 @@
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
+import { LanguageProvider, useLanguage } from './components/shared/LanguageContext';
+import { Menu, X, Globe, Phone, Mail, MapPin, Facebook, Instagram, Twitter, Youtube, ChevronUp } from 'lucide-react';
+
+const isAdminPage = (pageName) => pageName && pageName.toLowerCase().includes('admin');
+
+function NavBar({ currentPageName }) {
+  const { lang, setLang, t } = useLanguage();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 60);
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  const navLinks = [
+    { label: t('home'), page: 'Home' },
+    { label: t('about'), page: 'About' },
+    { label: t('attractions'), page: 'Attractions' },
+    { label: t('hotels'), page: 'Hotels' },
+    { label: t('packages'), page: 'TourPackages' },
+    { label: t('gallery'), page: 'Gallery' },
+    { label: t('travel_info'), page: 'TravelInfo' },
+    { label: t('contact'), page: 'Contact' },
+  ];
+
+  return (
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? 'nav-blur shadow-2xl' : 'bg-transparent'}`}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <div className="flex items-center justify-between h-20">
+          {/* Logo */}
+          <Link to={createPageUrl('Home')} className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full gold-gradient flex items-center justify-center shadow-lg">
+              <span className="text-white font-playfair font-bold text-sm">M</span>
+            </div>
+            <div className="hidden sm:block">
+              <div className="text-white font-playfair font-bold text-lg leading-none">Mahoya</div>
+              <div className="text-gold text-xs tracking-widest uppercase">Tourist Zone</div>
+            </div>
+          </Link>
+
+          {/* Desktop Nav */}
+          <div className="hidden lg:flex items-center gap-1">
+            {navLinks.map(link => (
+              <Link
+                key={link.page}
+                to={createPageUrl(link.page)}
+                className={`px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                  currentPageName === link.page
+                    ? 'text-gold'
+                    : 'text-white/80 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+
+          {/* Right Actions */}
+          <div className="flex items-center gap-3">
+            {/* Language Toggle */}
+            <div className="flex rounded-full overflow-hidden border border-white/20">
+              <button
+                onClick={() => setLang('en')}
+                className={`px-3 py-1 text-xs font-semibold transition-all ${lang === 'en' ? 'bg-gold text-white' : 'text-white/70 hover:text-white'}`}
+              >EN</button>
+              <button
+                onClick={() => setLang('si')}
+                className={`px-3 py-1 text-xs font-semibold transition-all ${lang === 'si' ? 'bg-gold text-white' : 'text-white/70 hover:text-white'}`}
+              >සිං</button>
+            </div>
+
+            <Link
+              to={createPageUrl('Booking')}
+              className="hidden md:flex items-center gap-2 bg-gold hover:bg-gold-light text-white text-sm font-semibold px-5 py-2.5 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl"
+              style={{ background: 'linear-gradient(135deg, #C9A84C, #E8C97A)' }}
+            >
+              {t('booking')}
+            </Link>
+
+            {/* Mobile Menu */}
+            <button
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="lg:hidden text-white p-2"
+            >
+              {menuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Menu */}
+      {menuOpen && (
+        <div className="lg:hidden nav-blur border-t border-white/10">
+          <div className="px-4 py-4 space-y-1">
+            {navLinks.map(link => (
+              <Link
+                key={link.page}
+                to={createPageUrl(link.page)}
+                onClick={() => setMenuOpen(false)}
+                className="block px-4 py-3 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-all"
+              >
+                {link.label}
+              </Link>
+            ))}
+            <Link
+              to={createPageUrl('Booking')}
+              onClick={() => setMenuOpen(false)}
+              className="block px-4 py-3 text-center bg-gold text-white rounded-full font-semibold mt-2"
+            >
+              {t('booking')}
+            </Link>
+          </div>
+        </div>
+      )}
+    </nav>
+  );
+}
+
+function Footer() {
+  const { t } = useLanguage();
+  const [showTop, setShowTop] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setShowTop(window.scrollY > 400);
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  return (
+    <footer className="forest-gradient text-white section-pattern">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
+          {/* Brand */}
+          <div>
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-12 h-12 rounded-full gold-gradient flex items-center justify-center">
+                <span className="text-white font-playfair font-bold text-lg">M</span>
+              </div>
+              <div>
+                <div className="font-playfair font-bold text-xl">Mahoya</div>
+                <div className="text-gold text-xs tracking-widest">TOURIST ZONE</div>
+              </div>
+            </div>
+            <p className="text-white/60 text-sm leading-relaxed mb-5">
+              Discover the untouched paradise of Mahoya — where lush forests, ancient culture, and warm hospitality await.
+            </p>
+            <div className="flex gap-3">
+              {[Facebook, Instagram, Twitter, Youtube].map((Icon, i) => (
+                <a key={i} href="#" className="w-9 h-9 rounded-full border border-white/20 flex items-center justify-center hover:border-gold hover:bg-gold/20 transition-all">
+                  <Icon size={15} className="text-white/70 hover:text-gold" />
+                </a>
+              ))}
+            </div>
+          </div>
+
+          {/* Quick Links */}
+          <div>
+            <h4 className="font-semibold text-gold tracking-wide mb-5 text-sm uppercase">Quick Links</h4>
+            <ul className="space-y-2.5">
+              {['Home', 'About', 'Attractions', 'Hotels', 'TourPackages', 'Gallery', 'Contact'].map(page => (
+                <li key={page}>
+                  <Link to={createPageUrl(page)} className="text-white/60 hover:text-gold text-sm transition-colors">
+                    {page.replace(/([A-Z])/g, ' $1').trim()}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Contact */}
+          <div>
+            <h4 className="font-semibold text-gold tracking-wide mb-5 text-sm uppercase">Contact Us</h4>
+            <ul className="space-y-3">
+              <li className="flex items-start gap-3 text-white/60 text-sm">
+                <MapPin size={15} className="text-gold mt-0.5 flex-shrink-0" />
+                Mahoya, Kurunegala District, North Western Province, Sri Lanka
+              </li>
+              <li className="flex items-center gap-3 text-white/60 text-sm">
+                <Phone size={15} className="text-gold flex-shrink-0" />
+                +94 37 000 0000
+              </li>
+              <li className="flex items-center gap-3 text-white/60 text-sm">
+                <Mail size={15} className="text-gold flex-shrink-0" />
+                info@mahoyatouristzone.lk
+              </li>
+            </ul>
+          </div>
+
+          {/* Newsletter */}
+          <div>
+            <h4 className="font-semibold text-gold tracking-wide mb-5 text-sm uppercase">Newsletter</h4>
+            <p className="text-white/60 text-sm mb-4">Get travel tips and special offers delivered to your inbox.</p>
+            <div className="flex rounded-full overflow-hidden border border-white/20">
+              <input
+                type="email"
+                placeholder="Your email"
+                className="flex-1 bg-transparent px-4 py-2.5 text-sm text-white placeholder-white/40 outline-none"
+              />
+              <button className="bg-gold px-4 py-2.5 text-white text-sm font-semibold hover:opacity-90 transition-opacity">
+                Go
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom */}
+        <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+          <p className="text-white/40 text-sm">© 2024 Mahoya Tourist Zone. All rights reserved.</p>
+          <p className="text-white/40 text-sm">මහඔය සංචාරක කලාපය — Sri Lanka</p>
+        </div>
+      </div>
+
+      {/* Scroll to top */}
+      {showTop && (
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className="fixed bottom-8 right-8 w-12 h-12 bg-gold rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-transform z-50"
+        >
+          <ChevronUp size={20} className="text-white" />
+        </button>
+      )}
+    </footer>
+  );
+}
+
+export default function Layout({ children, currentPageName }) {
+  const admin = isAdminPage(currentPageName);
+
+  return (
+    <LanguageProvider>
+      <style>{`
+        :root {
+          --gold: #C9A84C;
+          --gold-light: #E8C97A;
+          --forest: #1A3A2A;
+          --forest-mid: #2D5940;
+          --forest-light: #4A8860;
+        }
+      `}</style>
+      {admin ? (
+        <div className="min-h-screen bg-gray-50">{children}</div>
+      ) : (
+        <div className="min-h-screen flex flex-col">
+          <NavBar currentPageName={currentPageName} />
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </div>
+      )}
+    </LanguageProvider>
+  );
+}
